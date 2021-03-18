@@ -23,6 +23,31 @@
 - При сдаче домашней работы есть ссылка на PR
 - JS-код чистый и понятный, для форматирования используется Prettier
 
+### Phonebook API docs:
+- GET `/api/contacts` &mdash;  возвращает массив всех контактов
+
+- GET `/api/contacts/:contactId` &mdash;  возвращает контакт по id
+
+- POST `/api/contacts`  &mdash; создает новый контакт и возвращает его
+```sh
+{
+  "name": "Thomas Lucas",
+  "phone": "80673987993"
+}
+
+```
+- PATCH `/api/contacts/:contactId`  &mdash; обновляет контакт по id и возвращает его
+```sh
+{
+  "name": "Thomas Lucas",
+  "phone": "80673987993",
+  "email": "nec@Lucas.com"
+}
+```
+
+- DELETE `/api/contacts/:contactId`  &mdash; удаляет контакт по id и возвращает его
+
+
 ### Команды:
 
 - `npm start` &mdash; старт сервера в режиме production
