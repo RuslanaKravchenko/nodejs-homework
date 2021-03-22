@@ -1,36 +1,61 @@
-const { v4: uuidv4 } = require("uuid");
-const db = require("../db");
+const { ObjectID } = require("mongodb");
+const { HttpCode } = require("../helpers/constants");
+const { ErrorHandler } = require("../helpers/errorHandler");
 
 class ContactsRepository {
-  constructor() {}
-  getAllContacts() {
-    return db.get("contacts").value();
+  constructor(client) {
+    this.collection = client.db("db-contacts").collection("contacts");
   }
 
-  getContactById(id) {
-    return db.get("contacts").find({ id }).value();
+  #getMongoId(id) {
+    try {
+      return ObjectID(id);
+    } catch (e) {
+      throw new ErrorHandler(
+        HttpCode.BAD_REQUEST,
+        `MongoDb _id: ${e.message}`,
+        "Bad Request"
+      );
+    }
   }
 
-  createContact(body) {
-    const id = uuidv4();
-    const record = {
-      id,
-      ...body,
-    };
-    db.get("contacts").push(record).write();
-    return record;
+  async getAllContacts() {
+    const results = await this.collection.find().toArray();
+    return results;
   }
 
-  updateContact(id, body) {
-    const record = db.get("contacts").find({ id }).assign(body).value();
-    db.write();
-    return record.id ? record : null;
+  async getContactById(id) {
+    const objectId = this.#getMongoId(id);
+
+    const [result] = await this.collection.find({ _id: objectId }).toArray();
+    return result;
   }
 
-  removeContact(id) {
-    const [record] = db.get("contacts").remove({ id }).write();
+  async createContact(body) {
+    const {
+      ops: [result],
+    } = await this.collection.insertOne(body);
+    return result;
+  }
 
-    return record;
+  async updateContact(id, body) {
+    const objectId = this.#getMongoId(id);
+    const { value: result } = await this.collection.findOneAndUpdate(
+      { _id: objectId },
+      { $set: body },
+      { returnNewDocument: true }
+    );
+
+    return result;
+  }
+
+  async removeContact(id) {
+    const objectId = this.#getMongoId(id);
+    const { value: result } = await this.collection.findOneAndDelete({
+      _id: objectId,
+    });
+
+    return result;
   }
 }
 

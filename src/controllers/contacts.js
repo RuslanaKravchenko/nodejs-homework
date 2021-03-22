@@ -2,9 +2,9 @@ const { HttpCode } = require("../helpers/constants");
 const { ContactsService } = require("../services");
 const contactsService = new ContactsService();
 
-const getAllContacts = (req, res, next) => {
+const getAllContacts = async (req, res, next) => {
   try {
-    const contacts = contactsService.getAllContacts();
+    const contacts = await contactsService.getAllContacts();
     res.status(HttpCode.OK).json({
       status: "success",
       code: HttpCode.OK,
@@ -17,9 +17,9 @@ const getAllContacts = (req, res, next) => {
   }
 };
 
-const getContactById = (req, res, next) => {
+const getContactById = async (req, res, next) => {
   try {
-    const contact = contactsService.getContactById(req.params.contactId);
+    const contact = await contactsService.getContactById(req.params.contactId);
     if (contact) {
       return res.status(HttpCode.OK).json({
         status: "success",
@@ -40,9 +40,9 @@ const getContactById = (req, res, next) => {
   }
 };
 
-const createContact = (req, res, next) => {
+const createContact = async (req, res, next) => {
   try {
-    const contact = contactsService.createContact(req.body);
+    const contact = await contactsService.createContact(req.body);
     res.status(HttpCode.CREATED).json({
       status: "success",
       code: HttpCode.CREATED,
@@ -55,9 +55,9 @@ const createContact = (req, res, next) => {
   }
 };
 
-const updateContact = (req, res, next) => {
+const updateContact = async (req, res, next) => {
   try {
-    const contact = contactsService.updateContact(
+    const contact = await contactsService.updateContact(
       req.params.contactId,
       req.body
     );
@@ -81,9 +81,9 @@ const updateContact = (req, res, next) => {
   }
 };
 
-const removeContact = (req, res, next) => {
+const removeContact = async (req, res, next) => {
   try {
-    const contact = contactsService.removeContact(req.params.contactId);
+    const contact = await contactsService.removeContact(req.params.contactId);
     if (contact) {
       return res.status(HttpCode.OK).json({
         status: "success",
