@@ -1,41 +1,41 @@
-const Contact = require("../schemas/contacts");
+const { db } = require("../db");
 
 class ContactsRepository {
   constructor() {
-    this.model = Contact;
+    this.db = db;
   }
 
   async getAllContacts() {
-    const results = await this.model.find();
+    const results = await this.db.models.contact.findAll();
     return results;
   }
 
   async getContactById(id) {
-    const result = await this.model.findOne({ _id: id });
+    const result = await this.db.models.contact.findOne({ where: { id } });
     return result;
   }
 
   async createContact(body) {
-    const result = await this.model.create(body);
+    const result = await this.db.models.contact.create(body);
     return result;
   }
 
   async updateContact(id, body) {
-    const result = await this.model.findByIdAndUpdate(
-      { _id: id },
-      { ...body },
-      { new: true }
-    );
+    const result = await this.db.models.contact.findOne({ where: { id } });
+    if (!result) {
+      return null;
+    }
 
-    return result;
+    return result.update(body);
   }
 
   async removeContact(id) {
-    const result = await this.model.findByIdAndRemove({
-      _id: id,
-    });
+    const result = await this.db.models.contact.findOne({ where: { id } });
+    if (!result) {
+      return null;
+    }
 
-    return result;
+    return result.destroy();
   }
 }
 
