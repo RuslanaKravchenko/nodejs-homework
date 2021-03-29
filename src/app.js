@@ -2,6 +2,7 @@ const express = require("express");
 const logger = require("morgan");
 const cors = require("cors");
 const contactsRouter = require("./api/contacts");
+const usersRouter = require("./api/users");
 
 const { HttpCode } = require("./helpers/constants");
 
@@ -13,6 +14,7 @@ app.use(logger(formatsLogger));
 app.use(cors());
 app.use(express.json());
 
+app.use("/api/auth", usersRouter);
 app.use("/api/contacts", contactsRouter);
 
 app.use((req, res, next) => {
@@ -33,7 +35,5 @@ app.use((err, req, res, next) => {
     data: err.status === 500 ? "Internal Server Error" : err.data,
   });
 });
-
-
 
 module.exports = app;

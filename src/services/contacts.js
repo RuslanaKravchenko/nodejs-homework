@@ -14,8 +14,8 @@ class ContactsService {
     const data = await this.repositories.contacts.getContactById(id);
     return data;
   }
-  async createContact(body) {
-    const data = await this.repositories.contacts.createContact(body);
+  async createContact(body, userId) {
+    const data = await this.repositories.contacts.createContact(body, userId);
     return data;
   }
   async updateContact(id, body) {

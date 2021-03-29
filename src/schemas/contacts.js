@@ -26,6 +26,17 @@ const contactSchema = new Schema(
     email: {
       type: String,
       unique: true,
+      validate: {
+        validator: function (v) {
+          const reg = /^\S+@\S+\.\S+/;
+          return reg.test(String(value).toLowerCase());
+        },
+        message: (props) => `${props.value} is not a valid email!`,
+      },
+    },
+    owner: {
+      type: mongoose.SchemaTypes.ObjectId,
+      ref: "User",
     },
   },
   { versionKey: false, timestamps: true }
