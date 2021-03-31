@@ -45,10 +45,10 @@ Authorization: "Bearer token"
 ```
 
 - GET `/api/contacts` &mdash; возвращает массив всех контактов
-  --`/api/contacts?filter=name|phone` &mdash; возвращает указанные поля
-  --`/api/contacts?sortBy=name` &mdash; возвращает отсортированные контакты по указанному полю в порядке возрастания
-  --`/api/contacts?page=1&limit=15` &mdash; пагинация
-  --`/api/contacts?category=friends` &mdash; фильтрация контактов по категории(family,friends, work, others)
+  -`/api/contacts?filter=name|phone` &mdash; возвращает указанные поля
+  -`/api/contacts?sortBy=name` &mdash; возвращает отсортированные контакты по указанному полю в порядке возрастания
+  -`/api/contacts?page=1&limit=15` &mdash; пагинация
+  -`/api/contacts?category=friends` &mdash; фильтрация контактов по категории(family,friends, work, others)
 
   ```sh
   Authorization: "Bearer token"
