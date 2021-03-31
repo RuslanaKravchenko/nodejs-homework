@@ -27,6 +27,7 @@ const register = async (req, res, next) => {
       data: {
         id: newUser.id,
         email: newUser.email,
+        name: newUser.name,
         subscription: newUser.subscription,
       },
     });
@@ -39,7 +40,7 @@ const login = async (req, res, next) => {
   const { email, password } = req.body;
 
   try {
-    const token = await authService.login({
+    const { token, subscription } = await authService.login({
       email,
       password,
     });
@@ -50,6 +51,10 @@ const login = async (req, res, next) => {
         code: HttpCode.OK,
         data: {
           token,
+          user: {
+            email,
+            subscription,
+          },
         },
       });
     }
@@ -73,8 +78,41 @@ const logout = async (req, res, next) => {
   });
 };
 
+const getCurrentUser = async (req, res, next) => {
+  const user = req.user;
+  return res.status(HttpCode.OK).json({
+    status: "success",
+    code: HttpCode.OK,
+    data: {
+      user: {
+        name: user.name,
+        email: user.email,
+        subscription: user.subscription,
+      },
+    },
+  });
+};
+
+const updateUser = async (req, res, next) => {
+  const userId = req.user.id;
+  const user = await userService.updateUser(userId, req.body);
+  return res.status(HttpCode.OK).json({
+    status: "success",
+    code: HttpCode.OK,
+    data: {
+      user: {
+        name: user.name,
+        email: user.email,
+        subscription: user.subscription,
+      },
+    },
+  });
+};
+
 module.exports = {
   register,
   login,
   logout,
+  getCurrentUser,
+  updateUser,
 };

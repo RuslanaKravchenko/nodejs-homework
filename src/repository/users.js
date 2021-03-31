@@ -23,6 +23,16 @@ class UsersRepository {
   async updateToken(id, token) {
     await this.model.updateOne({ _id: id }, { token });
   }
+
+  async updateUser(id, body) {
+    const result = await this.model.findByIdAndUpdate(
+      { _id: id },
+      { ...body },
+      { new: true }
+    );
+
+    return result;
+  }
 }
 
 module.exports = UsersRepository;

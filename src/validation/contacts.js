@@ -26,6 +26,8 @@ const schemaUpdateContact = Joi.object({
       tlds: { allow: ["com", "net"] },
     })
     .optional(),
+
+  category: Joi.string().min(2).max(20).optional(),
 });
 
 const validate = (schema, body, next) => {

@@ -1,20 +1,43 @@
 const express = require("express");
 const logger = require("morgan");
 const cors = require("cors");
-const contactsRouter = require("./api/contacts");
-const usersRouter = require("./api/users");
+// Безопасность
+const helmet = require("helmet");
+const rateLimit = require("express-rate-limit");
 
+const contactsRouter = require("./api/contacts");
+const authRouter = require("./api/auth");
+const usersRouter = require("./api/users");
 const { HttpCode } = require("./helpers/constants");
+const { ErrorHandler } = require("./helpers/errorHandler");
+const { apiLimit, jsonLimit } = require("./config/rateLimit.json");
 
 const app = express();
 
 const formatsLogger = app.get("env") === "development" ? "dev" : "short";
-
 app.use(logger(formatsLogger));
-app.use(cors());
-app.use(express.json());
 
-app.use("/api/auth", usersRouter);
+app.use(helmet());
+app.use(cors());
+app.use(express.json({ limit: jsonLimit }));
+
+app.use(
+  "/api/",
+  rateLimit({
+    windowMs: apiLimit.windowMs, // 15 minutes
+    max: apiLimit.max, // limit each IP to 100 requests per windowMs
+    handler: (req, res, next) => {
+      next(
+        new ErrorHandler(
+          HttpCode.BAD_REQUEST,
+          "Вы исчерпали количество запросов за 15 минут. Попробуйте позже"
+        )
+      );
+    },
+  })
+);
+app.use("/api/auth", authRouter);
+app.use("/api/users", usersRouter);
 app.use("/api/contacts", contactsRouter);
 
 app.use((req, res, next) => {

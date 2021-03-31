@@ -1,5 +1,6 @@
 const mongoose = require("mongoose");
 const { Schema } = mongoose;
+const mongoosePaginate = require("mongoose-paginate-v2");
 
 const contactSchema = new Schema(
   {
@@ -34,6 +35,9 @@ const contactSchema = new Schema(
         message: (props) => `${props.value} is not a valid email!`,
       },
     },
+    category: {
+      type: String,
+    },
     owner: {
       type: mongoose.SchemaTypes.ObjectId,
       ref: "User",
@@ -42,6 +46,7 @@ const contactSchema = new Schema(
   { versionKey: false, timestamps: true }
 );
 
+contactSchema.plugin(mongoosePaginate);
 const Contact = mongoose.model("Contact", contactSchema);
 
 module.exports = Contact;
