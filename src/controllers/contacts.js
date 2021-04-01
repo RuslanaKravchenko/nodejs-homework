@@ -4,12 +4,13 @@ const contactsService = new ContactsService();
 
 const getAllContacts = async (req, res, next) => {
   try {
-    const contacts = await contactsService.getAllContacts();
+    const userId = req.user.id;
+    const contacts = await contactsService.getAllContacts(userId, req.query);
     res.status(HttpCode.OK).json({
       status: "success",
       code: HttpCode.OK,
       data: {
-        contacts,
+        ...contacts,
       },
     });
   } catch (e) {
@@ -19,7 +20,11 @@ const getAllContacts = async (req, res, next) => {
 
 const getContactById = async (req, res, next) => {
   try {
-    const contact = await contactsService.getContactById(req.params.contactId);
+    const userId = req.user.id;
+    const contact = await contactsService.getContactById(
+      userId,
+      req.params.contactId
+    );
     if (contact) {
       return res.status(HttpCode.OK).json({
         status: "success",
@@ -42,7 +47,8 @@ const getContactById = async (req, res, next) => {
 
 const createContact = async (req, res, next) => {
   try {
-    const contact = await contactsService.createContact(req.body);
+    const userId = req.user.id;
+    const contact = await contactsService.createContact(userId, req.body);
     res.status(HttpCode.CREATED).json({
       status: "success",
       code: HttpCode.CREATED,
@@ -57,7 +63,9 @@ const createContact = async (req, res, next) => {
 
 const updateContact = async (req, res, next) => {
   try {
+    const userId = req.user.id;
     const contact = await contactsService.updateContact(
+      userId,
       req.params.contactId,
       req.body
     );
@@ -83,7 +91,11 @@ const updateContact = async (req, res, next) => {
 
 const removeContact = async (req, res, next) => {
   try {
-    const contact = await contactsService.removeContact(req.params.contactId);
+    const userId = req.user.id;
+    const contact = await contactsService.removeContact(
+      userId,
+      req.params.contactId
+    );
     if (contact) {
       return res.status(HttpCode.OK).json({
         status: "success",

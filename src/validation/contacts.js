@@ -2,7 +2,7 @@ const Joi = require("joi");
 const { HttpCode } = require("../helpers/constants");
 
 const schemaCreateContact = Joi.object({
-  name: Joi.string().alphanum().min(2).max(30).required(),
+  name: Joi.string().min(2).max(30).required(),
 
   phone: Joi.string()
     .pattern(
@@ -12,7 +12,7 @@ const schemaCreateContact = Joi.object({
 });
 
 const schemaUpdateContact = Joi.object({
-  name: Joi.string().alphanum().min(2).max(30).required(),
+  name: Joi.string().min(2).max(30).required(),
 
   phone: Joi.string()
     .pattern(
@@ -26,6 +26,8 @@ const schemaUpdateContact = Joi.object({
       tlds: { allow: ["com", "net"] },
     })
     .optional(),
+
+  category: Joi.string().min(2).max(20).optional(),
 });
 
 const validate = (schema, body, next) => {

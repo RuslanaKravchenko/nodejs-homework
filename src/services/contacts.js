@@ -6,23 +6,35 @@ class ContactsService {
       contacts: new ContactsRepository(),
     };
   }
-  async getAllContacts() {
-    const data = await this.repositories.contacts.getAllContacts();
+  async getAllContacts(userId, query) {
+    const data = await this.repositories.contacts.getAllContacts(userId, query);
+    const { docs: contacts, totalDocs: total, limit, page, totalPages } = data;
+    return {
+      contacts,
+      total,
+      totalPages,
+      limit,
+      page,
+    };
+  }
+
+  async getContactById(userId, id) {
+    const data = await this.repositories.contacts.getContactById(userId, id);
     return data;
   }
-  async getContactById(id) {
-    const data = await this.repositories.contacts.getContactById(id);
+  async createContact(userId, body) {
+    const data = await this.repositories.contacts.createContact(userId, body);
     return data;
   }
-  async createContact(body) {
-    const data = await this.repositories.contacts.createContact(body);
+  async updateContact(userId, id, body) {
+    const data = await this.repositories.contacts.updateContact(
+      userId,
+      id,
+      body
+    );
     return data;
   }
-  async updateContact(id, body) {
-    const data = await this.repositories.contacts.updateContact(id, body);
-    return data;
-  }
-  async removeContact(id) {
+  async removeContact(userId, id) {
     const data = await this.repositories.contacts.removeContact(id);
     return data;
   }
