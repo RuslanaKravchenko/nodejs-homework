@@ -2,6 +2,7 @@ const { AuthService, UserService } = require("../services");
 const { HttpCode } = require("../helpers/constants");
 const userService = new UserService();
 const authService = new AuthService();
+const { saveAvatarToStatic } = require("../utils/createAvatar");
 
 const register = async (req, res, next) => {
   const { name, email, password, subscription } = req.body;
@@ -109,10 +110,59 @@ const updateUser = async (req, res, next) => {
   });
 };
 
+const updateUserAvatar = async (req, res, next) => {
+  try {
+    const userId = req.user.id;
+
+    const pathFile = req.file.path;
+
+    const fileName = `${Date.now()}-${req.file.originalname}`;
+
+    const newAvatarUrl = await saveAvatarToStatic(userId, pathFile, fileName);
+
+    // await Users.updateAvatar(userId, newAvatarUrl);
+
+    // await deletePreviousAvatar(req.user.avatarURL);
+
+    return res.status(HttpCode.OK).json({
+      status: "success",
+      code: HttpCode.OK,
+      data: { newAvatarUrl },
+    });
+  } catch (err) {
+    next(err);
+  }
+};
+
+// const updateUserAvatar = async (req, res, next) => {
+//   try {
+//     const id = req.user.id;
+
+//     const pathFile = req.file.path;
+
+//     const fileName = `${Date.now()}-${req.file.originalname}`;
+
+//     const newAvatarUrl = await saveAvatarToStatic(id, pathFile, fileName);
+
+//     await Users.updateAvatar(id, newAvatarUrl);
+
+//     await deletePreviousAvatar(req.user.avatarURL);
+
+//     return res.status(HttpCode.OK).json({
+//       status: "success",
+//       code: HttpCode.OK,
+//       data: { newAvatarUrl },
+//     });
+//   } catch (err) {
+//     next(err);
+//   }
+// };
+
 module.exports = {
   register,
   login,
   logout,
   getCurrentUser,
   updateUser,
+  updateUserAvatar,
 };
