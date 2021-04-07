@@ -28,6 +28,7 @@ const register = async (req, res, next) => {
         id: newUser.id,
         email: newUser.email,
         name: newUser.name,
+        avatar: newUser.avatar,
         subscription: newUser.subscription,
       },
     });
@@ -109,10 +110,25 @@ const updateUser = async (req, res, next) => {
   });
 };
 
+const updateAvatar = async (req, res, next) => {
+  const id = req.user.id;
+  const pathFile = req.file.path;
+  const newAvatarUrl = await userService.updateAvatar(id, pathFile);
+
+  return res.status(HttpCode.OK).json({
+    status: "success",
+    code: HttpCode.OK,
+    data: {
+      avatarURL: newAvatarUrl,
+    },
+  });
+};
+
 module.exports = {
   register,
   login,
   logout,
   getCurrentUser,
   updateUser,
+  updateAvatar,
 };
