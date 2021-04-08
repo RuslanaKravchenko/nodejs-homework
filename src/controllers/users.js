@@ -28,7 +28,7 @@ const register = async (req, res, next) => {
         id: newUser.id,
         email: newUser.email,
         name: newUser.name,
-        avatar: newUser.avatar,
+        avatar: newUser.avatarURL,
         subscription: newUser.subscription,
       },
     });
