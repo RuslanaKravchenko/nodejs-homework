@@ -110,18 +110,22 @@ const updateUser = async (req, res, next) => {
   });
 };
 
-const updateAvatar = async (req, res, next) => {
-  const id = req.user.id;
-  const pathFile = req.file.path;
-  const newAvatarUrl = await userService.updateAvatar(id, pathFile);
+const updateUserAvatar = async (req, res, next) => {
+  try {
+    const id = req.user.id;
+    const pathFile = req.file.path;
+    const newAvatarUrl = await userService.updateUserAvatar(id, pathFile);
 
-  return res.status(HttpCode.OK).json({
-    status: "success",
-    code: HttpCode.OK,
-    data: {
-      avatarURL: newAvatarUrl,
-    },
-  });
+    return res.status(HttpCode.OK).json({
+      status: "success",
+      code: HttpCode.OK,
+      data: {
+        avatarURL: newAvatarUrl,
+      },
+    });
+  } catch (err) {
+    next(err);
+  }
 };
 
 module.exports = {
@@ -130,5 +134,5 @@ module.exports = {
   logout,
   getCurrentUser,
   updateUser,
-  updateAvatar,
+  updateUserAvatar,
 };

@@ -34,7 +34,7 @@ class UsersRepository {
     return result;
   }
 
-  async updateAvatar(id, avatarURL, idCloudAvatar) {
+  async updateUserAvatar(id, avatarURL, idCloudAvatar) {
     await this.model.updateOne({ _id: id }, { avatarURL, idCloudAvatar });
   }
 

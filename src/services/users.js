@@ -36,7 +36,7 @@ class UserService {
     return data;
   }
 
-  async updateAvatar(id, pathFile) {
+  async updateUserAvatar(id, pathFile) {
     try {
       const {
         secure_url: avatarURL,
@@ -44,16 +44,21 @@ class UserService {
       } = await this.#uploadCloud(pathFile);
 
       const oldAvatar = await this.repositories.users.getAvatar(id);
+      console.log(oldAvatar);
       if (oldAvatar) {
         this.cloudinary.uploader.destroy(
           oldAvatar.idCloudAvatar,
           (err, result) => {
-            console.log(err, result);
+            // console.log(err, result);
           }
         );
       }
 
-      await this.repositories.users.updateAvatar(id, avatarURL, idCloudAvatar);
+      await this.repositories.users.updateUserAvatar(
+        id,
+        avatarURL,
+        idCloudAvatar
+      );
       await fs.unlink(pathFile);
 
       return avatarURL;

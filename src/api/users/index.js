@@ -12,7 +12,7 @@ router
     "/avatars",
     guard,
     upload.single("avatar"),
-    controllerUsers.updateAvatar
+    controllerUsers.updateUserAvatar
   );
 
 module.exports = router;

@@ -11,17 +11,17 @@ const params = {
 
 passport.use(
   new Strategy(params, async (payload, done) => {
-    console.log(
-      "🚀 ~ file: passport.js ~ line 14 ~ newStrategy ~ payload",
-      payload
-    );
+    // console.log(
+    //   "🚀 ~ file: passport.js ~ line 14 ~ newStrategy ~ payload",
+    //   payload
+    // );
     try {
       const service = new UserService();
       const user = await service.findUserById(payload.id);
-      console.log(
-        "🚀 ~ file: passport.js ~ line 18 ~ newStrategy ~ user",
-        user
-      );
+      // console.log(
+      //   "🚀 ~ file: passport.js ~ line 18 ~ newStrategy ~ user",
+      //   user
+      // );
 
       if (!user) {
         return done(new Error("User not found"));
