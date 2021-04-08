@@ -1,4 +1,9 @@
 const { UsersRepository } = require("../repository");
+const { ErrorHandler } = require("../helpers/errorHandler");
+const {
+  saveAvatarToStatic,
+  deleteOldAvatar,
+} = require("../helpers/createAvatar");
 
 class UserService {
   constructor() {
@@ -24,6 +29,26 @@ class UserService {
   async updateUser(id, body) {
     const data = await this.repositories.users.updateUser(id, body);
     return data;
+  }
+
+  async updateUserAvatar(id, pathFile, fileName) {
+    try {
+      const newFileName = `${Date.now()}-${fileName}`;
+      const newAvatarUrl = await saveAvatarToStatic(id, pathFile, newFileName);
+      console.log(newAvatarUrl);
+
+      const oldAvatar = await this.repositories.users.getAvatar(id);
+      if (oldAvatar) {
+        await deleteOldAvatar(oldAvatar);
+      }
+
+      await this.repositories.users.updateUserAvatar(id, newAvatarUrl);
+
+      return newAvatarUrl;
+    } catch (error) {
+      console.log(error);
+      throw new ErrorHandler(null, "Error upload avatar");
+    }
   }
 }
 

@@ -33,6 +33,15 @@ class UsersRepository {
 
     return result;
   }
+
+  async updateUserAvatar(id, newAvatarUrl) {
+    await this.model.updateOne({ _id: id }, { avatarURL: newAvatarUrl });
+  }
+
+  async getAvatar(id) {
+    const { avatarURL } = await this.model.findOne({ _id: id });
+    return avatarURL;
+  }
 }
 
 module.exports = UsersRepository;

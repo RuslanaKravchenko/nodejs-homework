@@ -17,36 +17,9 @@ const { apiLimit, jsonLimit } = require("./config/rateLimit.json");
 
 const app = express();
 
-// const multer = require("multer");
 require("dotenv").config();
 const IMG_DIR = process.env.IMG_DIR;
-app.use(express.static(path.join(__dirname, IMG_DIR)));
-
-// const UPLOAD_DIR = path.join(__dirname, process.env.UPLOAD_DIR);
-
-// const storage = multer.diskStorage({
-//   destination: function (req, file, cb) {
-//     cb(null, UPLOAD_DIR);
-//   },
-//   filename: function (req, file, cb) {
-//     // cb(null, file.fieldname + "-" + Date.now());
-//     cb(null, file.originalname);
-//   },
-//   limits: {
-//     fileSize: 2000000,
-//   },
-
-//   fileFilter: function (req, file, cb) {
-//     if (file.mimetype.includes("images")) {
-//       cb(null, true);
-//       return;
-//     }
-
-//     cb(null, false);
-//   },
-// });
-
-// const upload = multer({ storage: storage });
+app.use(express.static(path.join(process.cwd(), IMG_DIR)));
 
 const formatsLogger = app.get("env") === "development" ? "dev" : "short";
 app.use(logger(formatsLogger));
@@ -54,11 +27,6 @@ app.use(logger(formatsLogger));
 app.use(helmet());
 app.use(cors());
 app.use(express.json({ limit: jsonLimit }));
-
-// app.post("api/upload", upload.single("file"), async (req, res, next) => {
-//   console.log(req.file);
-//   res.redirect("/");
-// });
 
 app.use(
   "/api/",
