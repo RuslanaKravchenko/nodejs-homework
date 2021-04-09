@@ -44,15 +44,23 @@ Authorization: "Bearer token"
  Authorization: "Bearer token"
 ```
 
-- GET `/api/contacts` &mdash; возвращает массив всех контактов. 
- - `/api/contacts?filter=name|phone` &mdash; возвращает массив  контактов c  указанными полями.
- - `/api/contacts?sortBy=name` &mdash; возвращает отсортированные контакты по указанному полю в порядке возрастания.
- - `/api/contacts?page=1&limit=15` &mdash; пагинация.
- - `/api/contacts?category=friends` &mdash; фильтрация контактов по категории(family,friends, work, others).
+- PATCH `/api/users/avatars` &mdash; обновляет аватар пользователя, возвращает ссылку на изображение
 
-  ```sh
-  Authorization: "Bearer token"
-  ```
+```sh
+Content-Type: multipart/form-data
+ Authorization: "Bearer token"
+ RequestBody: загруженный файл
+```
+
+- GET `/api/contacts` &mdash; возвращает массив всех контактов.
+- `/api/contacts?filter=name|phone` &mdash; возвращает массив контактов c указанными полями.
+- `/api/contacts?sortBy=name` &mdash; возвращает отсортированные контакты по указанному полю в порядке возрастания.
+- `/api/contacts?page=1&limit=15` &mdash; пагинация.
+- `/api/contacts?category=friends` &mdash; фильтрация контактов по категории(family,friends, work, others).
+
+```sh
+Authorization: "Bearer token"
+```
 
 - GET `/api/contacts/:contactId` &mdash; возвращает контакт по id
 
