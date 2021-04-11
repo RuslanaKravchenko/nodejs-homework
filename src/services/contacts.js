@@ -18,24 +18,29 @@ class ContactsService {
     };
   }
 
-  async getContactById(userId, id) {
-    const data = await this.repositories.contacts.getContactById(userId, id);
+  async getContactById(userId, { contactId }) {
+    const data = await this.repositories.contacts.getContactById(
+      userId,
+      contactId
+    );
     return data;
   }
   async createContact(userId, body) {
     const data = await this.repositories.contacts.createContact(userId, body);
     return data;
   }
-  async updateContact(userId, id, body) {
+  async updateContact(userId, { contactId }, body) {
     const data = await this.repositories.contacts.updateContact(
       userId,
-      id,
+      contactId,
       body
     );
     return data;
   }
-  async removeContact(userId, id) {
-    const data = await this.repositories.contacts.removeContact(id);
+  async removeContact(userId, { contactId }) {
+    const data = await this.repositories.contacts.removeContact(
+      userId, contactId
+    );
     return data;
   }
 }
