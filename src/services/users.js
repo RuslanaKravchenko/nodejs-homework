@@ -1,24 +1,52 @@
-const { UsersRepository } = require("../repository");
 const cloudinary = require("cloudinary").v2;
+const { nanoid } = require("nanoid");
 const fs = require("fs").promises;
 require("dotenv").config();
+
+const { UsersRepository } = require("../repository");
+const EmailService = require("./email");
 const { ErrorHandler } = require("../helpers/errorHandler");
 
 class UserService {
   constructor() {
     this.cloudinary = cloudinary;
     this.cloudinary.config({
-      cloud_name: process.env.CLOUD_NAME,
-      api_key: process.env.API_KEY,
-      api_secret: process.env.API_SECRET,
+      cloud_name: process.env.CLOUD_NAME_CLOUDINARY,
+      api_key: process.env.API_KEY_CLOUDINARY,
+      api_secret: process.env.API_SECRET_CLOUDINARY,
     });
     this.repositories = {
       users: new UsersRepository(),
     };
+    this.emailService = new EmailService();
   }
   async createUser(body) {
-    const data = await this.repositories.users.createUser(body);
+    const verifyToken = nanoid();
+    const { email, name } = body;
+
+    try {
+      await this.emailService.sendEmail(verifyToken, email, name);
+    } catch (err) {
+      throw new ErrorHandler(503, err.message, "Service Unavailable");
+    }
+
+    const data = await this.repositories.users.createUser({
+      ...body,
+      verifyToken,
+    });
     return data;
+  }
+
+  async verify({ verificationToken }) {
+    const user = await this.repositories.users.findByField({
+      verifyToken: verificationToken,
+    });
+    if (user) {
+      await this.repositories.users.updateVerify(user);
+      return true;
+    }
+
+    return false;
   }
 
   async findUserByEmail(email) {
@@ -28,6 +56,11 @@ class UserService {
 
   async findUserById(id) {
     const data = await this.repositories.users.findUserById(id);
+    return data;
+  }
+
+  async getCurrentUser(id) {
+    const data = await this.repositories.users.getCurrentUser(id);
     return data;
   }
 
