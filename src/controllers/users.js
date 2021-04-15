@@ -1,7 +1,9 @@
-const { AuthService, UserService } = require("../services");
+const { AuthService, UserService, EmailService } = require("../services");
 const { HttpCode } = require("../helpers/constants");
+const { ErrorHandler } = require("../helpers/errorHandler");
 const userService = new UserService();
 const authService = new AuthService();
+const emailService = new EmailService();
 
 const register = async (req, res, next) => {
   const { name, email, password, subscription } = req.body;
@@ -41,28 +43,30 @@ const login = async (req, res, next) => {
   const { email, password } = req.body;
 
   try {
-    const { token, subscription } = await authService.login({
+    const result = await authService.login({
       email,
       password,
     });
 
-    if (token) {
-      return res.status(HttpCode.OK).json({
-        status: "success",
-        code: HttpCode.OK,
-        data: {
-          token,
-          user: {
-            email,
-            subscription,
+    if (result) {
+      const { token, subscription } = result;
+      if (token) {
+        return res.status(HttpCode.OK).json({
+          status: "success",
+          code: HttpCode.OK,
+          data: {
+            token,
+            user: {
+              email,
+              subscription,
+            },
           },
-        },
-      });
+        });
+      }
     }
 
     next({
-      status: "error",
-      code: HttpCode.UNAUTHORIZED,
+      status: HttpCode.UNAUTHORIZED,
       message: "Invalid creadentials",
     });
   } catch (err) {
@@ -79,19 +83,92 @@ const logout = async (req, res, next) => {
   });
 };
 
+const verify = async (req, res, next) => {
+  try {
+    const result = await userService.verify(req.params);
+    if (result) {
+      return res.status(HttpCode.OK).json({
+        status: "success",
+        code: HttpCode.OK,
+        data: {
+          message: "Verification successful",
+        },
+      });
+    } else {
+      return next({
+        status: HttpCode.BAD_REQUEST,
+        message:
+          "Your verification token is not valid. Contact with administration ",
+      });
+    }
+  } catch (e) {
+    next(e);
+  }
+};
+
+const resend = async (req, res, next) => {
+  try {
+    const { email, name } = req.body;
+
+    if (!email) {
+      return res.status(HttpCode.BAD_REQUEST).json({
+        status: "error",
+        code: HttpCode.BAD_REQUEST,
+        message: "missing required field email",
+      });
+    }
+
+    const user = await userService.findUserByEmail(email);
+
+    if (user.verify) {
+      return res.status(HttpCode.BAD_REQUEST).json({
+        status: "error",
+        code: HttpCode.BAD_REQUEST,
+        message: "Verification has already been passed",
+      });
+    }
+
+    const { verifyToken } = user;
+
+    
+
+    try {
+      await emailService.sendEmail(verifyToken, email, name);
+    } catch (err) {
+      throw new ErrorHandler(503, err.message, "Service Unavailable");
+    }
+
+    res.status(HttpCode.OK).json({
+      status: "success",
+      code: HttpCode.OK,
+      message: "Verification email sent",
+    });
+  } catch (err) {
+    next(err);
+  }
+};
+
 const getCurrentUser = async (req, res, next) => {
-  const user = req.user;
-  return res.status(HttpCode.OK).json({
-    status: "success",
-    code: HttpCode.OK,
-    data: {
-      user: {
-        name: user.name,
-        email: user.email,
-        subscription: user.subscription,
-      },
-    },
-  });
+  try {
+    const userId = req.user.id;
+    const user = await userService.getCurrentUser(userId);
+    if (user) {
+      return res.status(HttpCode.OK).json({
+        status: "success",
+        code: HttpCode.OK,
+        data: {
+          user,
+        },
+      });
+    } else {
+      return next({
+        status: HttpCode.UNAUTHORIZED,
+        message: "Invalid credentials",
+      });
+    }
+  } catch (e) {
+    next(e);
+  }
 };
 
 const updateUser = async (req, res, next) => {
@@ -132,6 +209,8 @@ module.exports = {
   register,
   login,
   logout,
+  verify,
+  resend,
   getCurrentUser,
   updateUser,
   updateUserAvatar,

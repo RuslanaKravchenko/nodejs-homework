@@ -10,9 +10,26 @@ class UsersRepository {
     return result;
   }
 
+  async getCurrentUser(id) {
+    const user = await this.model.findOne(
+      { _id: id },
+      "_id name email avatarURL subscription createdAt"
+    );
+    return user;
+  }
+
   async findUserByEmail(email) {
     const result = await this.model.findOne({ email });
     return result;
+  }
+
+  async findByField(field) {
+    const result = await this.model.findOne(field);
+    return result;
+  }
+
+  async updateVerify(user) {
+    await user.updateOne({ verify: true, verifyToken: null });
   }
 
   async createUser(body) {
