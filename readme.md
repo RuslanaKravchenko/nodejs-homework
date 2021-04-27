@@ -25,6 +25,16 @@ Content-Type: application/json
 
 ```
 
+- POST `/api/users/verify/` &mdash; повторная отправка email пользователю с ссылкой для верификации
+
+```sh
+Content-Type: application/json
+{
+  "email": "example@example.com"
+}
+
+```
+
 - POST `api/auth/logout` &mdash; логаут
 
 ```sh
